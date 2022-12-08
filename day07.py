@@ -1,24 +1,21 @@
-import itertools
-import collections
+import itertools, operator
 
 def solve(data):
-    cwd = []
-    dirs = collections.defaultdict(int)
-    for line in data.split("\n"):
+    cwd, dirs = [], {}
+    for line in itertools.chain(data.split("\n"), itertools.repeat("$ cd ..")):
         if line == "$ cd ..":
-            cwd.pop()
+            dirs[tuple(n for n, _ in cwd)] = cwd[-1][1]
+            if len(cwd) == 1: break
+            _, size = cwd.pop()
+            cwd[-1][1] += size
+
         elif line.startswith("$ cd "):
-            cwd.append(line[5:])
-        elif line.startswith("$ ls") or line.startswith("dir"):
-            pass
-        else:
+            cwd.append([line[5:], 0])
+        elif not line.startswith("$ ls") and not line.startswith("dir"):
             size, fname = line.split()
-            for i in range(1, len(cwd)+1):
-                dirs[tuple(cwd[:i])] += int(size)
+            cwd[-1][1] += int(size)
 
-    print(sum(v for v in dirs.values() if v < 100_000))
     need_to_free = dirs[('/',)] - 40000000
-    print(min(v for v in dirs.values() if v > need_to_free))
+    return sum(v for v in dirs.values() if v < 100_000), min(v for v in dirs.values() if v > need_to_free)
 
-if __name__ == '__main__':
-    solve(open("data/day07").read())
+print(x := solve(open("data/day07").read()), x == (1543140, 1117448))

@@ -1,11 +1,4 @@
-from itertools import product
-
-example = '''\
-30373
-25512
-65332
-33549
-35390'''
+from itertools import product, chain
 
 def solvea(data):
     trees = data.split("\n")
@@ -15,21 +8,16 @@ def solvea(data):
             if (h := int(trees[x[0]][x[1]])) > height:
                 height = h
                 yield (x[1], x[0])
-            elif h == 9:
-                break
 
-    visible = set()
-
-    for row in range(len(trees)):
-        visible.update(seen((row, c) for c in range(len(trees[0]))))
-        visible.update(seen((row, c) for c in reversed(range(len(trees[0])))))
-
-    for col in range(len(trees[0])):
-        visible.update(seen((r, col) for r in range(len(trees))))
-        visible.update(seen((r, col) for r in reversed(range(len(trees)))))
-
-    return len(visible)
-
+    return len(set(chain.from_iterable(
+        chain(
+            (seen((x, c) for c in range(len(trees)))),
+            (seen((x, c) for c in reversed(range(len(trees))))),
+            (seen((r, x) for r in range(len(trees)))),
+            (seen((r, x) for r in reversed(range(len(trees))))),
+        )
+        for x in range(len(trees))
+    )))
 
 def solveb(data):
     trees = data.split("\n")
@@ -44,8 +32,5 @@ def solveb(data):
     
     return max(score(row, col) for row in range(len(trees)) for col in range(len(trees[0])))
 
-
-if __name__ == "__main__":
-    # solve(example)
-    print(x := solvea(open("data/day08").read()), x == 1859)
-    print(x := solveb(open("data/day08").read()), x == 332640)
+print(x := solvea(open("data/day08").read()), x == 1859)
+print(x := solveb(open("data/day08").read()), x == 332640)
