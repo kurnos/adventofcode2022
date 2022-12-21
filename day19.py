@@ -1,6 +1,4 @@
 from typing import NamedTuple
-import math
-from collections import deque
 
 class Materials(NamedTuple):
     ore: int = 0
@@ -61,21 +59,18 @@ def run(bp, init:State, N):
                 new_s = State(new_s.t+1, new_s.mats + new_s.prod, new_s.prod)
     print("visited", len(visited))
 
-# data = """Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
-# Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian."""
-
 data = open("data/day19").read()
 
 blueprints = [parse(line) for line in data.split("\n")]
 
 s = State(0, Materials(), Materials(ore=1))
 
-# total = 0
-# for id, bp in enumerate(blueprints, 1):
-#     geodes = max(run(bp, s, 24))
-#     print(id, geodes, "->", geodes*id)
-#     total += geodes*id
-# print(x := total, x == 2341)
+total = 0
+for id, bp in enumerate(blueprints, 1):
+    geodes = max(run(bp, s, 24))
+    print(id, geodes, "->", geodes*id)
+    total += geodes*id
+print(x := total, x == 2341)
 
 total = 1
 for id, bp in enumerate(blueprints[:3], 1):
